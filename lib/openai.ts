@@ -57,7 +57,7 @@ export async function getRoast(
       const completion = await deps.client.chat.completions.create({
         model,
         temperature,
-        max_completion_tokens: 240,
+        max_completion_tokens: 512,
         messages: buildRoastMessages(input),
       });
 
