@@ -19,6 +19,9 @@ npm run dev
 | `OPENAI_BASE_URL` | Default `https://api.openai.com/v1`; swap for Groq/OpenRouter |
 | `OPENAI_MODEL` | Default `gpt-4o-mini` |
 | `OPENAI_MODELS` | Optional comma-separated fallback models; requests try the next model when one fails |
+| `THREADS_SCRAPER_API_KEY` | Server-only API key for recent Threads context |
+| `THREADS_SCRAPER_BASE_URL` | Optional scraper URL; defaults to `https://threads-scraper.fauzanakmal.com` |
+| `THREADS_SCRAPER_LIMIT` | Optional recent post limit; defaults to 10 |
 | `ROAST_RATE_LIMIT` / `ROAST_RATE_WINDOW_MS` | Per-IP limiter (default 15/60s) |
 | `NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token |
 
@@ -31,6 +34,7 @@ npm run dev
 If your domain is already proxied through Cloudflare, add Web Analytics in Cloudflare Dashboard → Analytics & Logs → Web Analytics, copy the site token, then set `NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` in your deploy env. Cloudflare Web Analytics tracks page views automatically; custom event tracking needs Cloudflare Zaraz if you want to capture button events from `lib/analytics.ts`.
 
 ## Architecture notes
+- `/api/roast` enriches prompts with up to 10 recent public Threads fetched server-side via `THREADS_SCRAPER_API_KEY`. If the scraper is unavailable or the key is missing, roast generation falls back to username + vibe.
 - Photo is **never** sent to the AI; it's display-only, composited into the card by `/api/card` (`next/og`).
 - `lib/cardTokens.ts` is the single source of design truth shared by the on-screen card and the OG render.
 - Rate limiting is in-memory per-instance (best-effort on serverless) — upgrade to edge KV if it goes viral.

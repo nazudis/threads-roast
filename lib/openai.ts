@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { buildRoastMessages } from "./buildPrompt";
+import type { RecentThread } from "./threadsContext";
 
 /** Creates a client from env. Throws if the key is missing. Never import in client components. */
 export function createClient(): OpenAI {
@@ -37,7 +38,12 @@ function configuredModels(explicitModel?: string): string[] {
 }
 
 export async function getRoast(
-  input: { username: string; vibe: string; reroll?: boolean },
+  input: {
+    username: string;
+    vibe: string;
+    reroll?: boolean;
+    recentThreads?: RecentThread[];
+  },
   deps: RoastDeps,
 ): Promise<string> {
   const models = configuredModels(deps.model);
