@@ -10,6 +10,7 @@ export const COLORS = {
   ember: '#B11A12',      // mid red
   vermillion: '#FF3B1F', // hot accent red
   hazard: '#F5C518',     // single hazard-yellow accent
+  burnOrange: '#FF7A1A', // mid-tier "medium well" severity
   ash: '#ECE0D6',        // warm off-white text
   ashDim: '#A89486',     // muted label text
 } as const
@@ -26,7 +27,7 @@ export type SeverityTier = { min: number; label: string; color: string }
 // Ascending by `min`. Higher score = more "burnt" = more savage.
 export const SEVERITY_TIERS: readonly SeverityTier[] = [
   { min: 0, label: 'SETENGAH MATANG', color: COLORS.hazard },
-  { min: 40, label: 'MEDIUM WELL', color: '#FF7A1A' },
+  { min: 40, label: 'MEDIUM WELL', color: COLORS.burnOrange },
   { min: 65, label: 'WELL DONE', color: COLORS.vermillion },
   { min: 85, label: 'GOSONG', color: COLORS.ember },
 ] as const

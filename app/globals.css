@@ -26,7 +26,10 @@
     var(--color-char);
 }
 
-/* Subtle film grain overlay — apply to a fixed full-screen layer. */
+/* Subtle film grain overlay — apply to a fixed full-screen layer.
+   IMPORTANT: put .grain on a NON-transformed ancestor (e.g. <main>/<body>).
+   position:fixed escapes stacking contexts created by transform/filter, so a
+   .grain host that is itself animated/transformed will mis-clip in Safari. */
 .grain::after {
   content: '';
   position: fixed;
