@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
 import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { CARD } from '@/lib/cardTokens'
 import { parseCardInput } from '@/lib/og/parseCardInput'
 import { CardImage } from '@/lib/og/CardImage'
@@ -8,12 +7,16 @@ import { CardImage } from '@/lib/og/CardImage'
 export const runtime = 'nodejs'
 
 // Load font binaries once per cold start.
-// Using fs.readFile instead of fetch(file://) because Next.js's fetch override
-// does not support the file:// protocol in dev or production (nodejs runtime).
-const assetsDir = join(process.cwd(), 'app/api/card/assets')
-const antonData = readFile(join(assetsDir, 'Anton-Regular.ttf')).then((b) => b.buffer as ArrayBuffer)
-const monoData = readFile(join(assetsDir, 'JetBrainsMono-Regular.ttf')).then((b) => b.buffer as ArrayBuffer)
-const monoBoldData = readFile(join(assetsDir, 'JetBrainsMono-Bold.ttf')).then((b) => b.buffer as ArrayBuffer)
+// Use fs.readFile with an import.meta.url-relative file URL (not fetch(file://),
+// which Next's fetch override rejects; and not a process.cwd() string path, which
+// Next's file tracing can't statically detect — that would drop the .ttf files
+// from the serverless bundle and ENOENT in production). This form gets traced AND
+// works in Node's fs. fs.readFile accepts a file: URL object natively.
+const toArrayBuffer = (b: Buffer) =>
+  b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer
+const antonData = readFile(new URL('./assets/Anton-Regular.ttf', import.meta.url)).then(toArrayBuffer)
+const monoData = readFile(new URL('./assets/JetBrainsMono-Regular.ttf', import.meta.url)).then(toArrayBuffer)
+const monoBoldData = readFile(new URL('./assets/JetBrainsMono-Bold.ttf', import.meta.url)).then(toArrayBuffer)
 
 export async function POST(req: Request) {
   let body: unknown

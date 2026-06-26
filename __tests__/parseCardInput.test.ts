@@ -24,4 +24,10 @@ describe('parseCardInput', () => {
     expect(r.ok).toBe(true) // tolerated…
     if (r.ok) expect(r.value.photoDataUrl).toBeNull() // …but dropped to fallback avatar
   })
+
+  it('clamps an overlong roast to 600 chars', () => {
+    const r = parseCardInput({ username: 'a', roast: 'x'.repeat(700) })
+    expect(r.ok).toBe(true)
+    if (r.ok) expect(r.value.roast.length).toBe(600)
+  })
 })

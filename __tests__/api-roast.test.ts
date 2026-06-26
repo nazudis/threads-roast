@@ -52,7 +52,8 @@ describe('POST /api/roast', () => {
 
   it('429 once the per-IP limit is exceeded', async () => {
     const ip = '9.9.9.9'
-    for (let i = 0; i < 15; i++) await POST(req({ username: 'a', vibe: 'b' }, ip))
+    const limit = Number(process.env.ROAST_RATE_LIMIT) || 15
+    for (let i = 0; i < limit; i++) await POST(req({ username: 'a', vibe: 'b' }, ip))
     const res = await POST(req({ username: 'a', vibe: 'b' }, ip))
     expect(res.status).toBe(429)
   })

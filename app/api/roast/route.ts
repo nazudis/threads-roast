@@ -6,8 +6,11 @@ import { createClient, getRoast } from '@/lib/openai'
 export const runtime = 'nodejs' // in-memory rate limit + sized bodies
 
 function clientIp(req: Request): string {
+  // v1 limitation: the first XFF entry is client-supplied and spoofable, so the
+  // per-IP limit is best-effort (matches the in-memory store's best-effort nature).
+  // Behind a trusted single proxy (e.g. Vercel), prefer the infra-set x-real-ip.
   const xff = req.headers.get('x-forwarded-for')
-  return xff?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown'
+  return req.headers.get('x-real-ip') || xff?.split(',')[0]?.trim() || 'unknown'
 }
 
 export async function POST(req: Request) {
