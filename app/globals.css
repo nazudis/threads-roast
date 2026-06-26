@@ -51,9 +51,12 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes gosong-stamp {
+  /* Wrapper settles at rotate(0) so the stamp's resting tilt comes only from
+     SeverityStamp's own -rotate-3 — keeping the on-screen angle identical to the
+     exported PNG (CardImage uses rotate(-3deg)). The -8deg start adds the slam. */
   0% { opacity: 0; transform: rotate(-8deg) scale(1.6); }
-  70% { opacity: 1; transform: rotate(-8deg) scale(0.92); }
-  100% { opacity: 1; transform: rotate(-8deg) scale(1); }
+  70% { opacity: 1; transform: rotate(-5deg) scale(0.92); }
+  100% { opacity: 1; transform: rotate(0deg) scale(1); }
 }
 .reveal { opacity: 0; animation: gosong-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 .reveal-1 { animation-delay: 0.05s; }
