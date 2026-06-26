@@ -20,7 +20,10 @@ export function buildRoastMessages(input: {
   vibe: string
   reroll?: boolean
 }): ChatMessage[] {
-  const vibe = input.vibe.trim() || '(kosong)'
+  // Strip any fence-like tokens so a user can't close the DATA block early and
+  // smuggle text outside it (e.g. a vibe containing "<<<END_DATA_USER>>>").
+  const safeVibe = input.vibe.replace(/<<<[^>]*>>>/g, '').trim()
+  const vibe = safeVibe || '(kosong)'
   const nudge = input.reroll
     ? '\nAmbil angle yang beda dari biasanya — jangan mirip versi sebelumnya.'
     : ''

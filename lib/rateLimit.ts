@@ -1,3 +1,6 @@
+// Note: expired keys are evicted lazily (only on re-access), so the store can
+// grow with unique keys until an instance restarts. On serverless this resets on
+// cold start; for multi-instance enforcement upgrade to edge KV (see plan P2).
 type Entry = { count: number; resetAt: number }
 const store = new Map<string, Entry>()
 

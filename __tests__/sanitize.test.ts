@@ -20,8 +20,8 @@ describe('sanitizeVibe', () => {
   it('collapses whitespace and trims', () => {
     expect(sanitizeVibe('  tukang   quote\n\njarang  posting ')).toBe('tukang quote jarang posting')
   })
-  it('strips control chars', () => {
-    expect(sanitizeVibe('hobi war')).toBe('hobi war')
+  it('strips non-printable control chars', () => {
+    expect(sanitizeVibe('hobi\x01\x08war\x7f')).toBe('hobiwar')
   })
   it('caps length', () => {
     expect(sanitizeVibe('x'.repeat(500)).length).toBe(VIBE_MAX)

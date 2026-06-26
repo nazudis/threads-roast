@@ -18,6 +18,8 @@ export async function getRoast(
   deps: RoastDeps,
 ): Promise<string> {
   const model = deps.model ?? process.env.OPENAI_MODEL ?? 'gpt-4o-mini'
+  // 1.1 (>1.0) widens reroll variety; OpenAI allows up to 2.0. Some
+  // OPENAI_BASE_URL-swapped providers cap at 1.0 — override via deps if needed.
   const temperature = deps.temperature ?? (input.reroll ? 1.1 : 0.9)
 
   const completion = await deps.client.chat.completions.create({
