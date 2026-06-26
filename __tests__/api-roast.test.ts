@@ -12,7 +12,7 @@ vi.mock("@/lib/threadsContext", () => ({
   ]),
 }));
 
-import { POST } from "@/app/api/roast/route";
+import { OPTIONS, POST } from "@/app/api/roast/route";
 import { getRoast } from "@/lib/openai";
 import { fetchRecentThreads } from "@/lib/threadsContext";
 import { __resetRateLimitStore } from "@/lib/rateLimit";
@@ -64,6 +64,21 @@ describe("POST /api/roast", () => {
     const json = await res.json();
     expect(JSON.stringify(json)).not.toContain("sk-secret");
     expect(json.error).toBeTruthy();
+  });
+
+  it("responds to CORS preflight for the production origin", async () => {
+    const res = await OPTIONS(
+      new Request("http://localhost/api/roast", {
+        method: "OPTIONS",
+        headers: { origin: "https://gosong.fauzanakmal.com" },
+      }),
+    );
+
+    expect(res.status).toBe(204);
+    expect(res.headers.get("access-control-allow-origin")).toBe(
+      "https://gosong.fauzanakmal.com",
+    );
+    expect(res.headers.get("access-control-allow-methods")).toContain("POST");
   });
 
   it("429 once the per-IP limit is exceeded", async () => {
