@@ -8,6 +8,11 @@ export function createClient(): OpenAI {
   return new OpenAI({
     apiKey,
     baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+    // The SDK's default User-Agent ("OpenAI/JS …") is blocked by some WAFs/gateways
+    // in front of OpenAI-compatible endpoints (returns 403 "Your request was
+    // blocked"). Send a neutral UA so any compatible proxy accepts the request.
+    // Override per-deployment with OPENAI_USER_AGENT if needed.
+    defaultHeaders: { 'User-Agent': process.env.OPENAI_USER_AGENT || 'gosong/1.0' },
   })
 }
 
