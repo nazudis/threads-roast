@@ -53,7 +53,6 @@ export async function POST(req: Request) {
 
   try {
     const recentThreads = await fetchRecentThreads(username, { limit: 10 });
-    console.log(recentThreads);
     const roast = await getRoast(
       { username, vibe, reroll, recentThreads },
       { client: createClient() },
