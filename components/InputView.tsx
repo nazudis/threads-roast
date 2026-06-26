@@ -46,6 +46,7 @@ export function InputView({
             className="w-full bg-transparent py-3 pl-1 font-mono text-ash outline-none placeholder:text-ashdim/50"
             autoCapitalize="none"
             autoCorrect="off"
+            inputMode="text"
             spellCheck={false}
           />
         </div>

@@ -75,7 +75,8 @@ export function ResultView({
           </button>
           <button
             onClick={onRestart}
-            className="flex-1 rounded-xl border border-oxblood py-3 font-mono text-sm text-ashdim transition active:scale-95"
+            disabled={rerolling || working}
+            className="flex-1 rounded-xl border border-oxblood py-3 font-mono text-sm text-ashdim transition active:scale-95 disabled:opacity-50"
           >
             mulai ulang
           </button>
