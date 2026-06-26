@@ -1,15 +1,15 @@
-'use client'
-import { useState } from 'react'
-import { RoastCard, type RoastCardData } from './RoastCard'
+"use client";
+import { useState } from "react";
+import { RoastCard, type RoastCardData } from "./RoastCard";
 
 async function fetchCardBlob(data: RoastCardData): Promise<Blob> {
-  const res = await fetch('/api/card', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
+  const res = await fetch("/api/card", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
     body: JSON.stringify(data),
-  })
-  if (!res.ok) throw new Error('card render failed')
-  return res.blob()
+  });
+  if (!res.ok) throw new Error("card render failed");
+  return res.blob();
 }
 
 export function ResultView({
@@ -19,37 +19,35 @@ export function ResultView({
   rerolling,
   onShared,
 }: {
-  data: RoastCardData
-  onReroll: () => void
-  onRestart: () => void
-  rerolling: boolean
-  onShared: () => void
+  data: RoastCardData;
+  onReroll: () => void;
+  onRestart: () => void;
+  rerolling: boolean;
+  onShared: () => void;
 }) {
-  const [working, setWorking] = useState(false)
-  const [err, setErr] = useState<string | null>(null)
+  const [working, setWorking] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   async function handleShare() {
-    setErr(null)
-    setWorking(true)
+    setErr(null);
+    setWorking(true);
     try {
-      const blob = await fetchCardBlob(data)
-      const file = new File([blob], `gosong-${data.username}.png`, { type: 'image/png' })
-      const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean }
-      if (nav.canShare?.({ files: [file] }) && nav.share) {
-        await nav.share({ files: [file], title: 'GOSONG', text: `Roast Threads gue: ${data.label} 🔥 via @gosong.app` })
-      } else {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = file.name
-        a.click()
-        URL.revokeObjectURL(url)
-      }
-      onShared()
+      const blob = await fetchCardBlob(data);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `gosong-${data.username}.png`;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+      onShared();
     } catch (e) {
-      if ((e as Error).name !== 'AbortError') setErr('Gagal nyimpen kartu. Coba lagi ya.')
+      if ((e as Error).name !== "AbortError")
+        setErr("Gagal nyimpen kartu. Coba lagi ya.");
     } finally {
-      setWorking(false)
+      setWorking(false);
     }
   }
 
@@ -63,7 +61,7 @@ export function ResultView({
           disabled={working || rerolling}
           className="w-full rounded-xl bg-vermillion py-4 font-display text-2xl tracking-wide text-char transition active:scale-[0.98] disabled:opacity-50"
         >
-          {working ? 'NYIAPIN KARTU…' : 'DOWNLOAD / SHARE 🔥'}
+          {working ? "NYIAPIN KARTU…" : "DOWNLOAD KARTU 🔥"}
         </button>
         <div className="flex gap-3">
           <button
@@ -71,7 +69,7 @@ export function ResultView({
             disabled={rerolling || working}
             className="flex-1 rounded-xl border border-vermillion py-3 font-mono text-sm text-ash transition active:scale-95 disabled:opacity-50"
           >
-            {rerolling ? 'ngeroast ulang…' : 'roast lagi 🔁'}
+            {rerolling ? "ngeroast ulang…" : "roast lagi 🔁"}
           </button>
           <button
             onClick={onRestart}
@@ -81,8 +79,10 @@ export function ResultView({
             mulai ulang
           </button>
         </div>
-        {err && <p className="text-center font-mono text-xs text-vermillion">{err}</p>}
+        {err && (
+          <p className="text-center font-mono text-xs text-vermillion">{err}</p>
+        )}
       </div>
     </div>
-  )
+  );
 }

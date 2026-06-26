@@ -223,16 +223,18 @@ git add -A && git commit -m "chore: set up vitest + testing-library"
 OPENAI_API_KEY=sk-your-key-here
 OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4o-mini
+# Optional comma-separated fallback chain. Requests try the next model when one fails.
+OPENAI_MODELS=gpt-4o-mini,gpt-4.1-mini
 
 # Abuse control (per-IP, per-window). Optional — these are the defaults.
 ROAST_RATE_LIMIT=15
 ROAST_RATE_WINDOW_MS=60000
 
-# Optional: public analytics domain for Plausible-style tracking (leave blank to no-op).
-NEXT_PUBLIC_ANALYTICS_DOMAIN=
+# Optional: Cloudflare Web Analytics token (leave blank to no-op).
+NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN=
 ```
 
-> ⚠️ **Never** prefix the AI keys with `NEXT_PUBLIC_` — that would ship the key to the browser. Only `NEXT_PUBLIC_ANALYTICS_DOMAIN` is intentionally public.
+> ⚠️ **Never** prefix the AI keys with `NEXT_PUBLIC_` — that would ship the key to the browser. Only `NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` is intentionally public.
 
 - [ ] **Step 2: Create your real `.env.local`**
 
@@ -994,7 +996,7 @@ export async function getRoast(
   const completion = await deps.client.chat.completions.create({
     model,
     temperature,
-    max_tokens: 240,
+    max_completion_tokens: 240,
     messages: buildRoastMessages(input),
   })
 
@@ -1886,7 +1888,7 @@ export function ResultView({
           disabled={working || rerolling}
           className="w-full rounded-xl bg-vermillion py-4 font-display text-2xl tracking-wide text-char transition active:scale-[0.98] disabled:opacity-50"
         >
-          {working ? 'NYIAPIN KARTU…' : 'DOWNLOAD / SHARE 🔥'}
+          {working ? 'NYIAPIN KARTU…' : 'DOWNLOAD KARTU 🔥'}
         </button>
         <div className="flex gap-3">
           <button
@@ -1921,7 +1923,7 @@ export function ResultView({
 **Files:**
 - Create: `lib/analytics.ts`
 
-> Provider-agnostic. Calls a Plausible-style `window.plausible(event, {props})` if present (drop in the script via env later); otherwise no-ops in prod and `console.debug`s in dev. This is enough to measure the make-or-break share-rate (§2).
+> Provider-agnostic. Cloudflare Web Analytics handles page views. If Cloudflare Zaraz is present, calls `window.zaraz.track(event, props)` for button events; otherwise no-ops in prod and `console.debug`s in dev.
 
 - [ ] **Step 1: Implement `lib/analytics.ts`**
 
@@ -1936,9 +1938,9 @@ type Props = Record<string, string | number | boolean>
 
 export function track(event: AnalyticsEvent, props?: Props): void {
   if (typeof window === 'undefined') return
-  const w = window as Window & { plausible?: (e: string, opts?: { props?: Props }) => void }
-  if (typeof w.plausible === 'function') {
-    w.plausible(event, props ? { props } : undefined)
+  const w = window as Window & { zaraz?: { track?: (e: string, props?: Props) => void } }
+  if (typeof w.zaraz?.track === 'function') {
+    w.zaraz.track(event, props)
   } else if (process.env.NODE_ENV !== 'production') {
     console.debug('[analytics]', event, props ?? {})
   }
@@ -2168,8 +2170,9 @@ npm run dev
 | `OPENAI_API_KEY` | Provider key (server-only — never `NEXT_PUBLIC_`) |
 | `OPENAI_BASE_URL` | Default `https://api.openai.com/v1`; swap for Groq/OpenRouter |
 | `OPENAI_MODEL` | Default `gpt-4o-mini` |
+| `OPENAI_MODELS` | Optional comma-separated fallback models; requests try the next model when one fails |
 | `ROAST_RATE_LIMIT` / `ROAST_RATE_WINDOW_MS` | Per-IP limiter (default 15/60s) |
-| `NEXT_PUBLIC_ANALYTICS_DOMAIN` | Optional Plausible-style analytics |
+| `NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token |
 
 ## Scripts
 - `npm run dev` / `build` / `start`

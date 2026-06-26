@@ -18,13 +18,17 @@ npm run dev
 | `OPENAI_API_KEY` | Provider key (server-only — never `NEXT_PUBLIC_`) |
 | `OPENAI_BASE_URL` | Default `https://api.openai.com/v1`; swap for Groq/OpenRouter |
 | `OPENAI_MODEL` | Default `gpt-4o-mini` |
+| `OPENAI_MODELS` | Optional comma-separated fallback models; requests try the next model when one fails |
 | `ROAST_RATE_LIMIT` / `ROAST_RATE_WINDOW_MS` | Per-IP limiter (default 15/60s) |
-| `NEXT_PUBLIC_ANALYTICS_DOMAIN` | Optional Plausible-style analytics |
+| `NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token |
 
 ## Scripts
 - `npm run dev` / `build` / `start`
 - `npm test` — unit + integration
 - `npm run qa:roasts` — batch content-safety review
+
+## Cloudflare analytics setup
+If your domain is already proxied through Cloudflare, add Web Analytics in Cloudflare Dashboard → Analytics & Logs → Web Analytics, copy the site token, then set `NEXT_PUBLIC_CLOUDFLARE_WEB_ANALYTICS_TOKEN` in your deploy env. Cloudflare Web Analytics tracks page views automatically; custom event tracking needs Cloudflare Zaraz if you want to capture button events from `lib/analytics.ts`.
 
 ## Architecture notes
 - Photo is **never** sent to the AI; it's display-only, composited into the card by `/api/card` (`next/og`).
