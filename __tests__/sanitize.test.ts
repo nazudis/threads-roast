@@ -12,8 +12,7 @@ describe('sanitizeUsername', () => {
     expect(sanitizeUsername('@' + 'a'.repeat(100)).length).toBe(USERNAME_MAX)
   })
   it('handles non-strings', () => {
-    // @ts-expect-error testing runtime guard
-    expect(sanitizeUsername(undefined)).toBe('')
+    expect(sanitizeUsername(undefined as unknown)).toBe('')
   })
 })
 
