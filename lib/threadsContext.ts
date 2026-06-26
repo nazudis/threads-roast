@@ -15,6 +15,16 @@ export type FetchRecentThreadsOptions = {
 
 type UnknownRecord = Record<string, unknown>;
 
+export class ThreadsContextError extends Error {
+  constructor(
+    public readonly code: "INVALID_THREADS_USERNAME",
+    message: string,
+  ) {
+    super(message);
+    this.name = "ThreadsContextError";
+  }
+}
+
 const DEFAULT_BASE_URL = "https://threads-scraper.fauzanakmal.com";
 const DEFAULT_LIMIT = 10;
 
@@ -69,6 +79,13 @@ function extractThread(item: unknown): RecentThread | null {
   };
 }
 
+function isInvalidUsernamePayload(payload: unknown): boolean {
+  const detail = asRecord(payload)?.detail;
+  return (
+    typeof detail === "string" && detail.toLowerCase() === "invalid username"
+  );
+}
+
 function extractItems(payload: unknown): unknown[] {
   if (Array.isArray(payload)) return payload;
   const record = asRecord(payload);
@@ -104,7 +121,16 @@ export async function fetchRecentThreads(
       headers: { "x-api-key": apiKey },
       signal: AbortSignal.timeout(4_000),
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      const payload = await res.json().catch(() => null);
+      if (res.status === 400 && isInvalidUsernamePayload(payload)) {
+        throw new ThreadsContextError(
+          "INVALID_THREADS_USERNAME",
+          "invalid username",
+        );
+      }
+      return [];
+    }
 
     const payload = await res.json();
     return extractItems(payload)
@@ -112,6 +138,7 @@ export async function fetchRecentThreads(
       .filter((thread): thread is RecentThread => Boolean(thread))
       .slice(0, limit);
   } catch (err) {
+    if (err instanceof ThreadsContextError) throw err;
     console.warn(
       "[threads-context] failed to fetch recent threads:",
       err instanceof Error ? err.message : err,

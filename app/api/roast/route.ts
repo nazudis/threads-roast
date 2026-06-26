@@ -88,6 +88,19 @@ export async function POST(req: Request) {
     );
     return json(req, { roast });
   } catch (err) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      err.code === "INVALID_THREADS_USERNAME"
+    ) {
+      return json(
+        req,
+        { error: "Username Threads gak ketemu." },
+        { status: 400 },
+      );
+    }
+
     console.error(
       "[roast] provider error:",
       err instanceof Error ? err.message : err,

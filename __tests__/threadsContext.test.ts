@@ -74,6 +74,22 @@ describe("fetchRecentThreads", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("throws a typed error when the scraper rejects an invalid username", async () => {
+    global.fetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ detail: "invalid username" }), {
+          status: 400,
+        }),
+    ) as never;
+
+    await expect(
+      fetchRecentThreads("not_found", {
+        apiKey: "some-key",
+        baseUrl: "https://example.com",
+      }),
+    ).rejects.toMatchObject({ code: "INVALID_THREADS_USERNAME" });
+  });
+
   it("fails open when the scraper api is down", async () => {
     global.fetch = vi.fn(
       async () => new Response("nope", { status: 500 }),

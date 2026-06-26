@@ -55,6 +55,21 @@ describe("POST /api/roast", () => {
     expect(res.status).toBe(400);
   });
 
+  it("400 when the Threads scraper says username is invalid", async () => {
+    (
+      fetchRecentThreads as unknown as ReturnType<typeof vi.fn>
+    ).mockRejectedValueOnce({
+      code: "INVALID_THREADS_USERNAME",
+    });
+
+    const res = await POST(req({ username: "not_found", vibe: "x" }));
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      error: "Username Threads gak ketemu.",
+    });
+    expect(getRoast).not.toHaveBeenCalled();
+  });
+
   it("502 with a friendly message (no key leak) when the provider throws", async () => {
     (getRoast as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
       new Error("sk-secret blew up"),
