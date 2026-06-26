@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GoImports">
+    <option name="excludedPackages">
+      <array>
+        <option value="github.com/pkg/errors" />
+        <option value="golang.org/x/net/context" />
+      </array>
+    </option>
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectDictionaryState">
+    <dictionary name="project" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="1" Folder0="$USER_HOME$/Downloads/aspell5-id-1.2-0" CustomDictionaries="1" CustomDictionary0="$USER_HOME$/Downloads/aspell5-id-1.2-0/kamus_id.dic" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="false" />
+</project>
