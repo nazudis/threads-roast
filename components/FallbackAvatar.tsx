@@ -5,6 +5,7 @@ export function FallbackAvatar({ username, size = 96 }: { username: string; size
     <div
       className="grid place-items-center rounded-2xl bg-char2 font-display text-vermillion"
       style={{ width: size, height: size, fontSize: size * 0.42 }}
+      role="img"
       aria-label={`Avatar ${username}`}
     >
       {initials(username)}

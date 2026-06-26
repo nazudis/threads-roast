@@ -50,6 +50,7 @@ export function PhotoUploader({
         onClick={() => inputRef.current?.click()}
         className="relative grid size-28 place-items-center overflow-hidden rounded-2xl border-4 border-vermillion bg-char2 text-ashdim transition active:scale-95"
         aria-label={value ? 'Ganti foto' : 'Upload foto'}
+        aria-busy={busy}
       >
         {busy ? (
           <span className="font-mono text-xs">mengompres…</span>
@@ -60,10 +61,14 @@ export function PhotoUploader({
           <span className="font-mono text-3xl">+</span>
         )}
       </button>
+      {/* Decorative twin of the square button above (same action). Hidden from
+          assistive tech to avoid announcing a duplicate control. */}
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
         className="font-mono text-xs text-ashdim underline underline-offset-4"
+        tabIndex={-1}
+        aria-hidden="true"
       >
         {value ? 'ganti foto' : 'tambah foto (opsional)'}
       </button>

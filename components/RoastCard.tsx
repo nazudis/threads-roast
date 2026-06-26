@@ -39,7 +39,10 @@ export function RoastCard({ data, animate = false }: { data: RoastCardData; anim
         </div>
         <div className="flex flex-col gap-2">
           <span className="font-mono text-lg font-bold text-ash">@{data.username}</span>
-          <div className="reveal-stamp" style={{ display: animate ? undefined : 'inline-block' }}>
+          {/* Only apply the reveal-stamp class when animating — it sets opacity:0
+              until the animation runs, which would otherwise hide the stamp on a
+              static (animate=false) card. */}
+          <div className={animate ? 'reveal-stamp' : ''} style={{ display: 'inline-block' }}>
             <SeverityStamp label={data.label} color={data.color} />
           </div>
         </div>
@@ -51,7 +54,9 @@ export function RoastCard({ data, animate = false }: { data: RoastCardData; anim
 
       <div className={`flex items-center justify-between border-t-2 border-dashed border-ashdim/50 pt-3 ${r('reveal reveal-3')}`}>
         <span className="font-display text-2xl tracking-wide text-vermillion">{COPY.brandName}</span>
-        <span className="font-mono text-[10px] text-ashdim">{COPY.handle}</span>
+        <span className="font-mono text-[10px] text-ashdim">
+          {COPY.handle} · {COPY.footnote}
+        </span>
       </div>
     </div>
   )
